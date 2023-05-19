@@ -1,18 +1,30 @@
+Наполнить таблицы базы данных при помощи операторов INSERT. Каждая таблица должна иметь не менее 5 разных записей.
 create table heroes(hero varchar primary key, patch double precision);
 Insert into heroes (hero, patch) values ('Hoodwink', 7.28), ('Dawnbreaker', 7.29),('Marci', 7.30),('Primal Beast', 7.31),('Muerta', 7.32);
 CREATE TABLE informations(id varchar primary key,attribute varchar,hero varchar,cm varchar,data integer,foreign key(hero) references heroes(hero));
 Insert into informations(id,attribute,hero,cm,data) values ('126','agility','Hoodwink','yes',2020), ('127','strength','Dawnbreaker','yes',2021), ('128','strength','Marci','yes',2021), ('129','strength','Primal Beast','yes',2022), ('130','intellect','Muerta','no',2023);
+Обновить записи в одной таблице на основании записи из другой (между таблицами должна быть связь)
 UPDATE informations set cm='yes in 7.33' from heroes where heroes.patch = '7.32' and informations.id='130';
+Удалить несколько записей из одной таблицы на основании информации из другой таблицы.
 delete from informations  where hero=(select hero from heroes where heroes.patch='7.28');
+Вывести часть столбцов из таблицы.
 select "data" from informations;
+Вывести несколько записей из таблицы, используя условие ограничения.
 SELECT*FROM informations where "attribute"='strength';
+Сделать декартово произведение двух таблиц.
 SELECT * FROM heroes, informations;
+Вывести записи из таблицы на основании условия ограничения, содержащегося в другой таблице.
 Select hero from heroes where hero=(select hero FROM infromations WHERE id>'127';
+Применить функции агрегирования к выводимым записям (sum, avg, min, max)
 SELECT sum(data) FROM informations;
 SELECT avg(data) FROM informations;
 SELECT min(id) FROM informations;
 SELECT max(id) FROM informations;
+Вывести записи из таблицы, используя сортировку от большего к меньшему.
 SELECT * FROM heroes ORDER BY "patch" DESC;
+Вывести записи из таблицы, используя сортировку от меньшего к большему с ограничением количества выводимых строк.
 select * from heroes order by "patch" asc limit 2;
+Произвести агрегирование выводимых записей по одному из полей ( group by).
 select "hero" from heroes group by "hero";
+Выполнить запрос, когда табличное выражение представляет собой другой запрос.
 SELECT * FROM (SELECT * FROM informations WHERE cm='yes') AS hero WHERE hero.data>2020;
