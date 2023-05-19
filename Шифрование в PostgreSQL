@@ -1,0 +1,13 @@
+Создайте таблицу, в которой два столбца содержат хешированные значения, где одно из них сгенерировано с помощью алгоритма SHA-1. Покажите, как можно выполнить проверку, используя данные двух хешей.
+\c n33491_23;
+create table hash(data text, information text);
+insert into hash values (digest('Ti', 'sha1'), crypt('horoshii', gen_salt('md5')));
+SELECT * FROM hash;
+select (data::text=digest('Ti', 'sha1')::text AND information=crypt('horoshii',information)) as match from hash;
+select (data::text=digest('Ne Ti', 'sha1')::text AND information=crypt('horoshii',information)) as match from hash;
+Создайте таблицу, в которой данные имеют байтовый тип. Зашифруйте этот столбец и покажите, как пользователь может расшифровать данные во время обычного select-запроса к зашифрованному столбцу.
+create table hash2(information bytea);
+insert into hash2 values (pgp_sym_encrypt('I USTAL','key1')::bytea);
+SELECT * FROM hash2
+SELECT pgp_sym_decrypt(information, 'key1') AS information FROM hash2;
+SELECT pgp_sym_decrypt(information, 'key2') AS information FROM hash2;
