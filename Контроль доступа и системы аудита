@@ -1,0 +1,50 @@
+Подготовьте таблицы для выполнения перечисленных ниже задач.
+create table lab4( hehe int);
+Выдайте права 3 пользователям. Пользователь User1 должен иметь полный доступ к таблице. User2 должен иметь право на вставку, select-запросы и обновление значений в таблицах. User3 должен иметь право на удаление строк из таблиц, а также возможность делегиовать свои права любому пользователю.
+create user User1;
+create user User2;
+create user User3;
+create user User4;
+Grant all on lab4 to User1;
+grant insert,select,update on lab4 to User2;
+Grant delete on lab4 to User3 with grant option;
+Предоставьте право на удаление от пользователя User3 пользователю User4 и проверьте все выданные права.
+set role User3;
+grant delete on lab4 to User4;
+Отмените все предоставленные выше права.
+SET ROLE postgres;
+revoke all privileges on lab4 from User1, User2, User3, User4 CASCADE;
+Создайте подсхему для User1 и User2 с различным набором таблиц. Покажите возможен ли доступ пользователей из одной подсхемы к другой.
+create schema User1_schema authorization User1;
+create schema User2_schema authorization User2;
+create table User1_schema.table1(haha int, khhh varchar);
+create table User2_schema.table2(hoho int, yep varchar);
+Создайте представление как объединенный набор столбцов из разных таблиц. Ограничьте доступ к созданному представлению для User1.
+create view Joke as select * from User1_schema.table1, User2_schema.table2;
+Select * from Joke
+Grant all on Joke to User2;
+Grant all on Joke to User3;
+Grant all on Joke to User4;
+Настройте безопасность на уровне строк, политика должна быть создана на основе текущего пользователя, и протестируйте ее.
+insert into User1_schema.table1 values (1,'da'),(2,'net'),(3,'da'),(4,'net');
+insert into User2_schema.table2 values (1,'da'),(2,'net'),(3,'da'),(4,'net');
+alter table User1_schema.table1 enable row level security ;
+create policy lvl_down on User1_schema.table1 for select to user4 using (khhh='da');
+Создайте триггер для регистрации вставки, обновления и удаления содержимого в определенных таблицах.
+create table proverka(kto varchar, chto varchar);
+create table lab48(kto varchar, chto varchar);
+create or replace function lab4_func() returns trigger as
+    $$BEGIN
+    if (tg_op = 'INSERT') then insert into proverka_ select user, 'INCERT';
+    return new;
+    elseif (tg_op = 'UPDATE') then insert into proverka_ select user, 'UPDATE';
+    return new;
+    elseif (tg_op = 'DELETE') then insert into proverka_ select user, 'DELETE';
+    return old;
+    end if;
+    end;
+    $$
+language plpgsql;
+create trigger proverka 
+after insert or update or delete on lab48
+for each row execute procedure lab4_func();
