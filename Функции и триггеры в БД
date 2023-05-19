@@ -1,0 +1,103 @@
+Написать процедуру, которая выполняет агрегации значений в таблице и обновляет значение в другой таблице. Таким образом, чтобы при запуске пользователем информация в таблице обновлялась и содержала агрегированные значения из другой таблицы.
+create table eat(day varchar PRIMARY KEY, kkal int, week date, protein varchar);
+create table podchet(summa varchar PRIMARY KEY, kkal int, week date);
+insert into podchet (summa, kkal) VALUES ('sum',0);
+insert into eat (day, kkal, week, protein) VALUES ('mon',2021,'2023-03-20', 'yes'),('tue',1567,'2023-03-21', 'yes'),('wen',3512,'2023-03-22', 'no');
+CREATE PROCEDURE kkal() AS
+$$
+DECLARE 
+   res real;
+BEGIN
+  res := (select sum(kkal) from eat);
+  UPDATE podchet SET kkal=res WHERE summa='sum';
+END
+$$ LANGUAGE plpgsql;
+
+CALL kkal();
+SELECT * FROM podchet;
+Написать триггер, который будет выполнять действие из 1 пункта автоматически при вставке записи в исходную таблицу. Таким образом, чтобы агрегированная информация всегда была актуальна
+CREATE FUNCTION kkal2() RETURNS trigger AS $$
+DECLARE 
+  res real;
+BEGIN
+   res := (select sum(kkal) from eat);
+  UPDATE podchet SET kkal=res WHERE summa='sum';
+  RETURN NULL;
+END
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE TRIGGER log
+  AFTER INSERT ON eat
+  EXECUTE PROCEDURE kkal2();
+insert into eat (day, kkal, week, protein) VALUES ('sat',1700,'2023-03-23', 'yes');
+Написать триггер, который на основании даты из вставляемой записи, вставлял ее в соответствующую таблицу.
+CREATE FUNCTION daubi() RETURNS trigger AS $$
+DECLARE
+  z date;
+BEGIN
+  z := NEW.week;
+  UPDATE podchet SET week=z;
+  RETURN NULL;
+END
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER zxc
+  AFTER INSERT ON eat
+  FOR EACH ROW EXECUTE PROCEDURE daubi();
+
+insert into eat (day, kkal, week, protein) VALUES ('sun',1245,'2023-03-25', 'yes');
+Написать триггер, который при вставке в таблицу, производил подмену вставляемого значения в соответствии с уже существующим словарем.
+CREATE TABLE slovar(good varchar , bad varchar);
+INSERT INTO slovar (good, bad) VALUES ('yes', 'Yes'), ('no','No'), ('yes', 'y'), ('no', 'N');
+CREATE FUNCTION podmena() RETURNS trigger AS $$
+DECLARE
+  tr varchar;
+  fa varchar;
+BEGIN
+  tr := NEW.protein;
+  IF tr not in (select good from slovar)
+  THEN fa := tr;
+  IF fa not in (select bad from slovar)
+  THEN tr := null;
+  END IF;
+  IF fa in (select bad from slovar)
+  THEN tr := (select good from slovar where bad=fa);
+  END IF;
+  UPDATE eat SET protein=tr WHERE day=NEW.day; 
+  END IF;
+  RETURN NULL;
+END
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER pod
+  AFTER INSERT ON eat
+  FOR EACH ROW EXECUTE PROCEDURE podmena();
+
+insert into eat (day, kkal, week, protein) VALUES ('th',1456,'2023-03-27', 'y');
+Написать процедуру выводящую сумму первого, последнего и значений записей в таблице, находящихся в позициях золотого сечения.
+ALTER TABLE eat ADD COLUMN id int;
+
+
+
+CREATE FUNCTION las() RETURNS int AS
+$$
+DECLARE 
+  pervi int;
+  posl int;
+  res int;
+BEGIN
+  pervi := 1;
+  res := 0;
+  posl := (select count(id) from eat);
+  WHILE pervi<posl LOOP
+  res := res + (select kkal from eat where id = pervi);
+  pervi := round(pervi*1.618);
+  END LOOP;
+  res := res + (select kkal from eat where id = posl);
+  RETURN res;
+END
+$$ LANGUAGE plpgsql;
+SELECT * FROM las();
