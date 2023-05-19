@@ -1,0 +1,18 @@
+create table heroes(hero varchar primary key, patch double precision);
+Insert into heroes (hero, patch) values ('Hoodwink', 7.28), ('Dawnbreaker', 7.29),('Marci', 7.30),('Primal Beast', 7.31),('Muerta', 7.32);
+CREATE TABLE informations(id varchar primary key,attribute varchar,hero varchar,cm varchar,data integer,foreign key(hero) references heroes(hero));
+Insert into informations(id,attribute,hero,cm,data) values ('126','agility','Hoodwink','yes',2020), ('127','strength','Dawnbreaker','yes',2021), ('128','strength','Marci','yes',2021), ('129','strength','Primal Beast','yes',2022), ('130','intellect','Muerta','no',2023);
+UPDATE informations set cm='yes in 7.33' from heroes where heroes.patch = '7.32' and informations.id='130';
+delete from informations  where hero=(select hero from heroes where heroes.patch='7.28');
+select "data" from informations;
+SELECT*FROM informations where "attribute"='strength';
+SELECT * FROM heroes, informations;
+Select hero from heroes where hero=(select hero FROM infromations WHERE id>'127';
+SELECT sum(data) FROM informations;
+SELECT avg(data) FROM informations;
+SELECT min(id) FROM informations;
+SELECT max(id) FROM informations;
+SELECT * FROM heroes ORDER BY "patch" DESC;
+select * from heroes order by "patch" asc limit 2;
+select "hero" from heroes group by "hero";
+SELECT * FROM (SELECT * FROM informations WHERE cm='yes') AS hero WHERE hero.data>2020;
