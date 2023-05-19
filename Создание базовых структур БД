@@ -1,19 +1,36 @@
+Создать базу данных в соответствии с шаблоном номергруппы_номерстудента. Выбрать базу данных в соответствии с шаблоном номергруппы_номерстудента
 CREATE DATABASE n33491_23;
+Создать новую схему в своей БД с именем номергруппы_номерстудента_schema_lab1.
 CREATE SCHEMA n33491_23_schema_lab1;
+Создать таблицу номергруппы_номерстудента_tbl1 в схеме по умолчанию и номергруппы_номерстудента_tbl2 в созданной в пункте 3.
 CREATE TABLE n33491_23_tbl1();
 CREATE TABLE n33491_23_schema_lab1.n33491_23_tbl2();
+Создать таблицу и номергруппы_номерстудента_table_i5 в своей схеме (далее все объекты нужно создавать в своей схеме из пункта 3), в которой будут использовать атрибуты с типами integer, varchar, char, timestamp, date, bytea.
 CREATE TABLE n33491_23_schema_lab1.n33491_23_table_i5(chislo integer, slovo varchar, chto char, clock timestamp, data date, ten bytea);
+Создать таблицу номергруппы_номерстудента_table_i6, в которой будет атрибут с любым типом со значением по умолчанию и атрибут с типом интервал времени.
 CREATE TABLE n33491_23_schema_lab1.n33491_23_table_i6( clock INTERVAL, chislo integer DEFAULT 4510);
+Создать свой составной тип с именем номергруппы_номерстудента_type для описания свойств какого-либо объекта со свойствами real, real, date, bytea.
 CREATE TYPE n33491_23_schema_lab1.n33491_23 AS (Z real, X real, C date, R bytea);
+Создать свой тип перечисления с именем номергруппы_номерстудента_enum для возможности указания градации размера большой, средний, маленький.
 CREATE TYPE n33491_23_schema_lab1.n33491_23_enum AS enum ('Большой', 'Средний', 'Маленький');
+Создать свой домен с именем номергруппы_номерстудента_domain с проверкой, что в нем содержится только 3 цифры
 CREATE DOMAIN n33491_23_schema_lab1.n33491_23_domain AS integer CHECK (value=3);
+Создать последовательность с именем номергруппы_номерстудента_seq с началом 1000 и шагам -1. (1000,999, 998, …)
 CREATE SEQUENCE n33491_23_schema_lab1.n33491_23_seq AS integer INCREMENT by -1 MAXVALUE 1000 MINVALUE 0;
+Создать для таблицы с пункта 5 индекс с именем номергруппы_номерстудента_idx1 по атрибуту c типом integer.
 CREATE INDEX n33491_23_idx1 ON n33491_23_schema_lab1.n33491_23_table_i5 (chislo);
+Создать составной индекс для таблицы из пункта 5 с именем номергруппы_номерстудента _idx2 по атрибутам integer, date.
 CREATE INDEX n33491_23_idx2 ON n33491_23_schema_lab1.n33491_23_table_i5 (chislo, data);
+Создать индекс по выражению для таблицы из пункта 5 с именем номергруппы_номерстудента _idx3 по атрибуту integer, выражение взятие по модулю 10.
 CREATE INDEX n33491_23_idx3 ON n33491_23_schema_lab1.n33491_23_table_i5 (mod(chislo, 10));
 CREATE INDEX n33491_23_idx4 ON n33491_23_schema_lab1.n33491_23_table_i5 (chislo) where (chislo >100 and chislo < 1000);
+Создать таблицу как в пункте 5, но с ограничение NOT NULL на поле char с именем номергруппы_номерстудента_notnull
 CREATE TABLE n33491_23_schema_lab1.n33491_23_notnull(chislo integer, slovo varchar, chto char NOT NULL, clock timestamp, data date, ten bytea);
+Создать таблицу как в пункте 5, но с ограничение UNIQUE на комбинацию полей char, integer с именем номергруппы_номерстудента_unique
 CREATE TABLE n33491_23_schema_lab1.n33491_23_unique(chislo integer UNIQUE, slovo varchar, chto char UNIQUE, clock timestamp, data date, ten bytea);
+Создать таблицу как в пункте 5, но с ограничение первичного ключа поля integer с именем номергруппы_номерстудента_pk
 CREATE TABLE n33491_23_schema_lab1.n33491_23_pk(chislo integer UNIQUE NOT NULL, slovo varchar, chto char , clock timestamp, data date, ten bytea);
+Создать таблицу как в пункте 5, но с ограничением проверкой поля varchar на наличие символа ‘a’ номергруппы_номерстудента_check
 CREATE TABLE n33491_23_schema_lab1.n33491_23_check(chislo integer, slovo varchar CHECK (slovo !='a'), chto char , clock timestamp, data date, ten bytea);
+Создать представление, в котором из таблицы из пункта 5 будут представлены только атрибуты с типом varchar и date, имя представления номергруппы_номерстудента_view
 CREATE VIEW n33491_23_schema_lab1.n33491_23_view AS SELECT slovo,data FROM n33491_23_schema_lab1.n33491_23_table_i5;
